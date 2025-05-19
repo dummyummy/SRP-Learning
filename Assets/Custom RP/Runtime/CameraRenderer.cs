@@ -5,7 +5,8 @@ using UnityEngine.Rendering;
 
 public partial class CameraRenderer
 {
-    static ShaderTagId unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit");
+    static ShaderTagId unlitShaderTagId = new ShaderTagId("CustonUnlit");
+    static ShaderTagId litShaderTagId = new ShaderTagId("CustomLit");
 
     ScriptableRenderContext context;
     Camera camera;
@@ -64,6 +65,8 @@ public partial class CameraRenderer
             enableInstancing = useGPUInstancing,
         };
         var filterSettings = new FilteringSettings(RenderQueueRange.opaque); // 先绘制不透明物体
+        drawSettings.SetShaderPassName(0, unlitShaderTagId);
+        drawSettings.SetShaderPassName(1, litShaderTagId);
         context.DrawRenderers(cullingResults, ref drawSettings, ref filterSettings);
 
         sortSettings.criteria = SortingCriteria.CommonTransparent;
