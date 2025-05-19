@@ -57,16 +57,14 @@ partial class CameraRenderer
     {
         if (camera.cameraType == CameraType.SceneView)
         {
-            ScriptableRenderContext.EmitWorldGeometryForSceneView(camera);
+            ScriptableRenderContext.EmitWorldGeometryForSceneView(camera); // Emit UI Geometry
         }
     }
 
     partial void PrepareBuffer()
     {
         Profiler.BeginSample("Editor Only");
-        SampleName = camera.name;
-        commandBuffer.name = SampleName;
-        //commandBuffer.name = SampleName = camera.name;
+        commandBuffer.name = SampleName = camera.name;
         Profiler.EndSample();
     }
 #else

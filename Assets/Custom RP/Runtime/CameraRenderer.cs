@@ -17,6 +17,8 @@ public partial class CameraRenderer
     };
     CullingResults cullingResults;
 
+    Lighting lighting = new Lighting();
+
     public void Render(
         ScriptableRenderContext context, Camera camera,
         bool useDynamicBatching, bool useGPUInstancing) // 每帧都会被调用
@@ -32,6 +34,7 @@ public partial class CameraRenderer
         }
 
         Setup();
+        lighting.Setup(context, cullingResults);
         DrawVisibleGeometry(useDynamicBatching, useGPUInstancing);
         DrawUnsupportedShaders();
         DrawGizmos();
@@ -44,8 +47,8 @@ public partial class CameraRenderer
         CameraClearFlags flags = camera.clearFlags;
         commandBuffer.ClearRenderTarget(
             flags <= CameraClearFlags.Depth,
-            flags == CameraClearFlags.Color,
-            flags == CameraClearFlags.Color ? camera.backgroundColor.linear : Color.clear);
+            flags <= CameraClearFlags.Color,
+            flags <= CameraClearFlags.Color ? camera.backgroundColor.linear : Color.clear);
         commandBuffer.BeginSample(SampleName);
         ExecuteBuffer();
         //context.SetupCameraProperties(camera);
@@ -53,8 +56,6 @@ public partial class CameraRenderer
 
     private void DrawVisibleGeometry(bool useDynamicBatching, bool useGPUInstancing)
     {
-        context.DrawSkybox(camera); // 在Opaque之前绘制天空盒
-
         var sortSettings = new SortingSettings(camera)
         {
             criteria = SortingCriteria.CommonOpaque // 从前到后绘制
@@ -68,6 +69,8 @@ public partial class CameraRenderer
         drawSettings.SetShaderPassName(0, unlitShaderTagId);
         drawSettings.SetShaderPassName(1, litShaderTagId);
         context.DrawRenderers(cullingResults, ref drawSettings, ref filterSettings);
+
+        context.DrawSkybox(camera); // 在Opaque之后绘制天空盒
 
         sortSettings.criteria = SortingCriteria.CommonTransparent;
         drawSettings.sortingSettings = sortSettings;
