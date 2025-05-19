@@ -16,7 +16,9 @@ public partial class CameraRenderer
     };
     CullingResults cullingResults;
 
-    public void Render(ScriptableRenderContext context, Camera camera) // 每帧都会被调用
+    public void Render(
+        ScriptableRenderContext context, Camera camera,
+        bool useDynamicBatching, bool useGPUInstancing) // 每帧都会被调用
     {
         this.context = context;
         this.camera = camera;
@@ -29,7 +31,7 @@ public partial class CameraRenderer
         }
 
         Setup();
-        DrawVisibleGeometry();
+        DrawVisibleGeometry(useDynamicBatching, useGPUInstancing);
         DrawUnsupportedShaders();
         DrawGizmos();
         Submit();
@@ -48,17 +50,21 @@ public partial class CameraRenderer
         //context.SetupCameraProperties(camera);
     }
 
-    private void DrawVisibleGeometry()
+    private void DrawVisibleGeometry(bool useDynamicBatching, bool useGPUInstancing)
     {
+        context.DrawSkybox(camera); // 在Opaque之前绘制天空盒
+
         var sortSettings = new SortingSettings(camera)
         {
             criteria = SortingCriteria.CommonOpaque // 从前到后绘制
         };
-        var drawSettings = new DrawingSettings(unlitShaderTagId, sortSettings);
+        var drawSettings = new DrawingSettings(unlitShaderTagId, sortSettings)
+        {
+            enableDynamicBatching = useDynamicBatching,
+            enableInstancing = useGPUInstancing,
+        };
         var filterSettings = new FilteringSettings(RenderQueueRange.opaque); // 先绘制不透明物体
         context.DrawRenderers(cullingResults, ref drawSettings, ref filterSettings);
-
-        context.DrawSkybox(camera); // 在Opaque之后绘制天空盒
 
         sortSettings.criteria = SortingCriteria.CommonTransparent;
         drawSettings.sortingSettings = sortSettings;
