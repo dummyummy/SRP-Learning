@@ -17,7 +17,7 @@ public class Lighting
 
     static Vector4[] dirLightColors = new Vector4[maxDirLightCount];
     static Vector4[] dirLightDirections = new Vector4[maxDirLightCount];
-    static Vector4[] dirLightShadowData = new Vector4[maxDirLightCount]; // [shadow strength, atlas tile index, not used, not used]
+    static Vector4[] dirLightShadowData = new Vector4[maxDirLightCount]; // [shadow strength, first atlas tile index, not used, not used]
 
     CommandBuffer buffer = new CommandBuffer
     {

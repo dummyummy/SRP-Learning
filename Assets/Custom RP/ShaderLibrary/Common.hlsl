@@ -35,4 +35,10 @@ float4 TransformWorldToHClip(float3 positionWS)
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 
+float DistanceSquared(float3 pA, float3 pB)
+{
+    float3 disp = pA - pB;
+    return dot(disp, disp);
+}
+
 #endif // CUSTOM_COMMON_INCLUDED
