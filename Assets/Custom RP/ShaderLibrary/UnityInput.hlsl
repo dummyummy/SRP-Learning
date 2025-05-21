@@ -16,6 +16,8 @@ float4x4 unity_MatrixInvVP;
 float4x4 unity_MatrixPreviousM;
 float4x4 unity_MatrixPreviousMI;
 
+float3 _WorldSpaceCameraPos;
+
 float4x4 OptimizeProjectionMatrix(float4x4 M)
 {
     // Matrix format (x = non-constant value).

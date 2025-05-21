@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 public partial class CameraRenderer
 {
-    static ShaderTagId unlitShaderTagId = new ShaderTagId("CustonUnlit");
+    static ShaderTagId unlitShaderTagId = new ShaderTagId("CustomUnlit");
     static ShaderTagId litShaderTagId = new ShaderTagId("CustomLit");
 
     ScriptableRenderContext context;
@@ -21,23 +21,28 @@ public partial class CameraRenderer
 
     public void Render(
         ScriptableRenderContext context, Camera camera,
-        bool useDynamicBatching, bool useGPUInstancing) // 每帧都会被调用
+        bool useDynamicBatching, bool useGPUInstancing,
+        ShadowSettings shadowSettings) // 每帧都会被调用
     {
         this.context = context;
         this.camera = camera;
 
         PrepareBuffer();
         PrepareForSceneWindow();
-        if (!Cull())
+        if (!Cull(shadowSettings.shadowDistance))
         {
             return;
         }
 
+        commandBuffer.BeginSample(SampleName);
+        ExecuteBuffer();
+        lighting.Setup(context, cullingResults, shadowSettings);
+        commandBuffer.EndSample(SampleName);
         Setup();
-        lighting.Setup(context, cullingResults);
         DrawVisibleGeometry(useDynamicBatching, useGPUInstancing);
         DrawUnsupportedShaders();
         DrawGizmos();
+        lighting.Cleanup();
         Submit();
     }
 
@@ -91,10 +96,11 @@ public partial class CameraRenderer
         commandBuffer.Clear();
     }
 
-    private bool Cull()
+    private bool Cull(float maxShadowDistance)
     {
         if (camera.TryGetCullingParameters(out ScriptableCullingParameters p))
         {
+            p.shadowDistance = Mathf.Min(maxShadowDistance, camera.farClipPlane);
             cullingResults = context.Cull(ref p);
             return true;
         }
