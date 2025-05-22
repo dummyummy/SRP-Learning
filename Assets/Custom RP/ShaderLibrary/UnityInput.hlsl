@@ -2,10 +2,29 @@
 #define CUSTOM_UNITY_INPUT_INCLUDED
 
 CBUFFER_START(UnityPerDraw)
-float4x4 unity_ObjectToWorld;
-float4x4 unity_WorldToObject;
-float4 unity_LODFade;
-real4 unity_WorldTransformParams; // w is usually 1.0, or -1.0 for odd-negative scale transforms
+    float4x4 unity_ObjectToWorld;
+    float4x4 unity_WorldToObject;
+    float4 unity_LODFade;
+    real4 unity_WorldTransformParams; // w is usually 1.0, or -1.0 for odd-negative scale transforms
+    // GI Lightmap
+    float4 unity_LightmapST;
+    float4 unity_DynamicLightmapST;
+    // GI Light probes
+    float4 unity_SHAr;
+    float4 unity_SHAg;
+    float4 unity_SHAb;
+    float4 unity_SHBr;
+    float4 unity_SHBg;
+    float4 unity_SHBb;
+    float4 unity_SHC;
+    // GI LPPV
+    // x = Disabled(0)/Enabled(1)
+    // y = Computation are done in global space(0) or local space(1)
+    // z = Texel size on U texture coordinate
+    float4 unity_ProbeVolumeParams;
+    float4x4 unity_ProbeVolumeWorldToObject;
+    float4 unity_ProbeVolumeSizeInv; // Note: This variable is float4 and not float3 (compare to builtin unity) to be compatible with SRP batcher
+    float4 unity_ProbeVolumeMin; // Note: This variable is float4 and not float3 (compare to builtin unity) to be compatible with SRP batche
 CBUFFER_END
 float4x4 unity_MatrixV;
 float4x4 unity_MatrixInvV;
