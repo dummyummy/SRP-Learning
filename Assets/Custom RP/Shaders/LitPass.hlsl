@@ -68,6 +68,7 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     surface.alpha = base.a;
     surface.metallic = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Metallic);
     surface.smoothness = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Smoothness);
+    surface.dither = InterleavedGradientNoise(input.positionCS.xy, 0);
     // base.rgb = surface.normal * 0.5 + 0.5; // Debug normal
     // base.rgb = abs(length(input.normalWS) - 1.0) * 10.0; // Visualize normal length bias
 
