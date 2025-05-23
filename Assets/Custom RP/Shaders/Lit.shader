@@ -14,6 +14,10 @@ Shader "Custom RP/Lit"
 		[Toggle(_PREMULTIPLY_ALPHA)] _PremulAlpha ("Premultiply Alpha", Float) = 0
 		[KeywordEnum(On, Clip, Dither, Off)] _Shadows ("Shadows", Float) = 0
 		[Toggle(_RECEIVE_SHADOWS)] _ReceiveShadows ("Receive Shadows", Float) = 1
+		[NoScaleOffset] _EmissionMap("Emission", 2D) = "white" {}
+		[HDR] _EmissionColor("Emission Color", Color) = (1.0, 1.0, 1.0, 1.0)
+		[HideInInspector] _MainTex("Texture for Lightmap", 2D) = "white" {}
+		[HideInInspector] _Color("Color for Lightmap", Color) = (0.5, 0.5, 0.5, 1.0)
 	}
 	SubShader
 	{
@@ -23,6 +27,7 @@ Shader "Custom RP/Lit"
 		ENDHLSL
 		Pass
 		{
+			Name "LitForwardPass"
 			Tags
 			{
 				"LightMode" = "CustomLit"
@@ -47,6 +52,7 @@ Shader "Custom RP/Lit"
 
 		Pass
 		{
+			Name "ShadowCasterPass"
 			Tags
 			{
 				"LightMode" = "ShadowCaster"
@@ -59,6 +65,24 @@ Shader "Custom RP/Lit"
 			#pragma vertex ShadowCasterPassVertex
 			#pragma fragment ShadowCasterPassFragment
 			#include "ShadowCasterPass.hlsl"
+			ENDHLSL
+		}
+
+		Pass
+		{
+			Name "LitMetaPass"
+			Tags
+			{
+				"LightMode" = "Meta"
+			}
+
+			Cull Off
+
+			HLSLPROGRAM
+			#pragma target 3.5
+			#pragma vertex MetaPassVertex
+			#pragma fragment MetaPassFragment
+			#include "MetaPass.hlsl"
 			ENDHLSL
 		}
 	}
