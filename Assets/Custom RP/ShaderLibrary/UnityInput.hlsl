@@ -25,6 +25,9 @@ CBUFFER_START(UnityPerDraw)
     float4x4 unity_ProbeVolumeWorldToObject;
     float4 unity_ProbeVolumeSizeInv; // Note: This variable is float4 and not float3 (compare to builtin unity) to be compatible with SRP batcher
     float4 unity_ProbeVolumeMin; // Note: This variable is float4 and not float3 (compare to builtin unity) to be compatible with SRP batche
+
+    // This contain occlusion factor from 0 to 1 for dynamic objects (no SH here)
+    float4 unity_ProbesOcclusion;
 CBUFFER_END
 float4x4 unity_MatrixV;
 float4x4 unity_MatrixInvV;

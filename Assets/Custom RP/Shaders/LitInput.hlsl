@@ -49,7 +49,7 @@ float3 GetEmission(float2 baseUV)
 {
     float4 map = SAMPLE_TEXTURE2D(_EmissionMap, sampler_BaseMap, baseUV);
     float4 color = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _EmissionColor);
-    return map * color;
+    return (map * color).xyz;
 }
 
 #endif // CUSTOM_LIT_INPUT_INCLUDED

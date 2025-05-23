@@ -19,6 +19,8 @@
 
 #define LIGHTMAP_NAME unity_Lightmap
 #define LIGHTMAP_SAMPLER_NAME samplerunity_Lightmap
+#define SHADOWMASK_NAME unity_ShadowMask
+#define SHADOWMASK_SAMPLER_NAME samplerunity_ShadowMask
 #define LPPV_NAME unity_ProbeVolumeSH
 #define LPPV_SAMPLER_NAME samplerunity_ProbeVolumeSH
 
@@ -26,11 +28,34 @@ TEXTURE2D(LIGHTMAP_NAME);
 SAMPLER(LIGHTMAP_SAMPLER_NAME);
 TEXTURE3D_FLOAT(LPPV_NAME);
 SAMPLER(LPPV_SAMPLER_NAME);
+TEXTURE2D(SHADOWMASK_NAME);
+SAMPLER(SHADOWMASK_SAMPLER_NAME);
 
 struct GI
 {
     float3 diffuse;
+    ShadowMask shadowMask;
 };
+
+float4 SampleBakedShadows(float2 lightMapUV, Surface surfaceWS)
+{
+#if defined(LIGHTMAP_ON)
+    return SAMPLE_TEXTURE2D(SHADOWMASK_NAME, SHADOWMASK_SAMPLER_NAME, lightMapUV);
+#else
+    if (unity_ProbeVolumeParams.x)
+    {
+        return SampleProbeOcclusion(TEXTURE3D_ARGS(LPPV_NAME, LPPV_SAMPLER_NAME),
+            surfaceWS.position, unity_ProbeVolumeWorldToObject,
+            unity_ProbeVolumeParams.y, unity_ProbeVolumeParams.z, 
+            unity_ProbeVolumeMin.xyz, unity_ProbeVolumeSizeInv.xyz
+        );
+    }
+    else
+    {
+        return unity_ProbesOcclusion;
+    }
+#endif
+}
 
 // Wrapper of SampleSingleLightMap in EntityLighting.hlsl
 float3 SampleSingleLightmap(float2 lightMapUV)
@@ -88,6 +113,18 @@ GI GetGI(float2 lightMapUV, Surface surfaceWS)
 {
     GI gi;
     gi.diffuse = SampleLightMap(lightMapUV) + SampleLightProbe(surfaceWS);
+    gi.shadowMask.always = false;
+    gi.shadowMask.distance = false;
+    gi.shadowMask.shadows = 1.0;
+
+    #if defined(_SHADOW_MASK_ALWAYS)
+        gi.shadowMask.always = true;
+        gi.shadowMask.shadows = SampleBakedShadows(lightMapUV, surfaceWS);
+    #elif defined(_SHADOW_MASK_DISTANCE)
+        gi.shadowMask.distance = true;
+        gi.shadowMask.shadows = SampleBakedShadows(lightMapUV, surfaceWS);
+    #endif
+
     return gi;
 }
 

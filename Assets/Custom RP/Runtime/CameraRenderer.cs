@@ -69,7 +69,9 @@ public partial class CameraRenderer
         {
             enableDynamicBatching = useDynamicBatching,
             enableInstancing = useGPUInstancing,
-            perObjectData = PerObjectData.Lightmaps | PerObjectData.LightProbe | PerObjectData.LightProbeProxyVolume
+            perObjectData = PerObjectData.Lightmaps | PerObjectData.LightProbe |
+                            PerObjectData.LightProbeProxyVolume | PerObjectData.ShadowMask | 
+                            PerObjectData.OcclusionProbe | PerObjectData.OcclusionProbeProxyVolume
         };
         var filterSettings = new FilteringSettings(RenderQueueRange.opaque); // 先绘制不透明物体
         drawSettings.SetShaderPassName(0, unlitShaderTagId);

@@ -96,7 +96,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: 006a6edb7349e1e478d2002bbb031b92, type: 2}
+  m_LightingDataAsset: {fileID: 112000000, guid: 0335a94d74bd110418978cae57fe2278, type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 0760cce4dbaa4af4392971c082284c57, type: 2}
 --- !u!196 &4
 NavMeshSettings:
@@ -1872,7 +1872,7 @@ Transform:
   m_GameObject: {fileID: 650468749}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.37, y: 0, z: -22.21}
+  m_LocalPosition: {x: 9.56, y: 0, z: -22.21}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1995,13 +1995,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 735555824}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -27.92, y: 0.82, z: 18.46}
+  m_LocalRotation: {x: -0, y: 0.089604065, z: -0, w: 0.9959775}
+  m_LocalPosition: {x: -24.18, y: 2, z: -27.1}
   m_LocalScale: {x: 111.508, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1505781169}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 10.282, z: 0}
 --- !u!259 &735555826
 LightProbeProxyVolume:
   m_ObjectHideFlags: 0
@@ -2617,7 +2617,7 @@ GameObject:
   - component: {fileID: 913684485}
   - component: {fileID: 913684484}
   m_Layer: 0
-  m_Name: Sphere (40)
+  m_Name: Emissive Cube 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4307,7 +4307,7 @@ Transform:
   m_GameObject: {fileID: 1522097544}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.07, y: 0, z: -44.8}
+  m_LocalPosition: {x: -3.07, y: 0, z: -52}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4430,7 +4430,7 @@ Transform:
   m_GameObject: {fileID: 1563969516}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -4.34}
+  m_LocalPosition: {x: 0, y: 0, z: -4.74}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4799,7 +4799,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0.5
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -4811,7 +4811,7 @@ Light:
     m_Strength: 1
     m_Bias: 0.9
     m_NormalBias: 0.5
-    m_NearPlane: 8.56
+    m_NearPlane: 0.2
     m_CullingMatrixOverride:
       e00: 1
       e01: 0
@@ -4844,7 +4844,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 6e-44, z: 3e-44, w: 1.6582e-41}
+  m_BoundingSphereOverride: {x: 2.4405384e-30, y: 6e-44, z: 2.5e-44, w: 1.553e-41}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -5097,7 +5097,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1714958467
 Transform:
   m_ObjectHideFlags: 0
@@ -5125,7 +5125,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.3
+  m_Intensity: 0.5
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -5164,13 +5164,13 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 1
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 5.3986492e-11, y: 7.3977387e+31, z: 7.1479372e+22, w: 4.5435827e+30}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -5435,7 +5435,7 @@ GameObject:
   - component: {fileID: 1809691606}
   - component: {fileID: 1809691605}
   m_Layer: 0
-  m_Name: Sphere (41)
+  m_Name: Emissive Cube 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5790,7 +5790,7 @@ Transform:
   m_GameObject: {fileID: 1900099487}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.27005222, z: -0, w: 0.9628457}
-  m_LocalPosition: {x: 27.197662, y: 0, z: -24.042171}
+  m_LocalPosition: {x: 28.92, y: 0, z: -19.43}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9925,7 +9925,7 @@ Transform:
   m_GameObject: {fileID: 2073925061}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.37, y: 0, z: -10.21}
+  m_LocalPosition: {x: 6.07, y: 0, z: -10.21}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
