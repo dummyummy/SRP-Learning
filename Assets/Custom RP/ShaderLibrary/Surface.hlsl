@@ -10,9 +10,10 @@ struct Surface
     float3 color;
     float alpha;
     float metallic;
+    float occlusion;
     float smoothness;
-    float dither;
     float fresnelStrength;
+    float dither;
 };
 
 #endif
