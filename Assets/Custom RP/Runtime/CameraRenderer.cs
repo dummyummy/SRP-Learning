@@ -71,7 +71,8 @@ public partial class CameraRenderer
             enableInstancing = useGPUInstancing,
             perObjectData = PerObjectData.Lightmaps | PerObjectData.LightProbe |
                             PerObjectData.LightProbeProxyVolume | PerObjectData.ShadowMask | 
-                            PerObjectData.OcclusionProbe | PerObjectData.OcclusionProbeProxyVolume
+                            PerObjectData.OcclusionProbe | PerObjectData.OcclusionProbeProxyVolume |
+                            PerObjectData.ReflectionProbes
         };
         var filterSettings = new FilteringSettings(RenderQueueRange.opaque); // 先绘制不透明物体
         drawSettings.SetShaderPassName(0, unlitShaderTagId);

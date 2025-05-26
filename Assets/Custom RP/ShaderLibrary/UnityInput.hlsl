@@ -28,6 +28,10 @@ CBUFFER_START(UnityPerDraw)
 
     // This contain occlusion factor from 0 to 1 for dynamic objects (no SH here)
     float4 unity_ProbesOcclusion;
+
+    // Reflection Probe 0 block feature
+    // HDR environment map decode instructions
+    float4 unity_SpecCube0_HDR;
 CBUFFER_END
 float4x4 unity_MatrixV;
 float4x4 unity_MatrixInvV;
