@@ -54,7 +54,8 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     UNITY_SETUP_INSTANCE_ID(input);
     ClipLOD(input.positionCS.xy, unity_LODFade.x);
     
-    float4 base = GetBase(input.baseUV, input.detailUV);
+    InputConfig config = GetInputConfig(input.baseUV, input.detailUV);
+    float4 base = GetBase(config);
 
 #if defined(_CLIPPING)
     clip(base.a - GetCutoff(input.baseUV));
@@ -63,7 +64,7 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     Surface surface;
     surface.position = input.positionWS;
 #if defined(_NORMAL_MAP)
-    surface.normal = NormalTangentToWorld(GetNormalTS(input.baseUV, input.detailUV), input.normalWS, input.tangentWS, true);
+    surface.normal = NormalTangentToWorld(GetNormalTS(config), input.normalWS, input.tangentWS, true);
     surface.interpolatedNormal = normalize(input.normalWS);
 #else
     surface.normal = normalize(input.normalWS);
@@ -73,18 +74,18 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     surface.depth = -TransformWorldToView(input.positionWS).z;
     surface.color = base.rgb;
     surface.alpha = base.a;
-    surface.metallic = GetMetallic(input.baseUV);
-    surface.occlusion = GetOcclusion(input.baseUV);
-    surface.smoothness = GetSmoothness(input.baseUV, input.detailUV);
+    surface.metallic = GetMetallic(config);
+    surface.occlusion = GetOcclusion(config);
+    surface.smoothness = GetSmoothness(config);
     surface.dither = InterleavedGradientNoise(input.positionCS.xy, 0);
-    surface.fresnelStrength = GetFresnel(input.baseUV);
+    surface.fresnelStrength = GetFresnel(config);
     // base.rgb = surface.normal * 0.5 + 0.5; // Debug normal
     // base.rgb = abs(length(input.normalWS) - 1.0) * 10.0; // Visualize normal length bias
 
     BRDF brdf = GetBRDF(surface);
     GI gi = GetGI(GI_FRAGMENT_DATA(input), surface, brdf);
     float3 color = GetLighting(surface, brdf, gi);
-    color += GetEmission(input.baseUV);
+    color += GetEmission(config);
     return float4(color, surface.alpha);
 }
 

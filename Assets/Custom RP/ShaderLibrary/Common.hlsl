@@ -6,6 +6,8 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
 #include "UnityInput.hlsl"
 
+#define INPUT_PROP(name) UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, name)
+
 /*
 float3 TransformObjectToWorld(float3 positionOS)
 {

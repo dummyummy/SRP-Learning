@@ -12,6 +12,7 @@ struct Varyings
 {
     float4 positionCS : SV_POSITION;
     float2 baseUV : VAR_BASE_UV;
+    float2 detailUV : VAR_DETAIL_UV;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
@@ -23,13 +24,16 @@ Varyings UnlitPassVertex(Attributes input)
     float3 positionWS = TransformObjectToWorld(input.positionOS);
     output.positionCS = TransformWorldToHClip(positionWS);
     output.baseUV = TransformBaseUV(input.baseUV);
+    output.detailUV = TransformDetailUV(input.baseUV);
     return output;
 }
 
 float4 UnlitPassFragment(Varyings input) : SV_TARGET
 {
     UNITY_SETUP_INSTANCE_ID(input);
-    float4 base = GetBase(input.baseUV);
+
+    InputConfig config = GetInputConfig(input.baseUV, input.detailUV);
+    float4 base = GetBase(config);
 
 #if defined(_CLIPPING)
     clip(base.a - UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff));

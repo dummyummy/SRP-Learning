@@ -12,6 +12,7 @@ struct Varyings
 {
     float4 positionCS : SV_POSITION;
     float2 baseUV : VAR_BASE_UV;
+    float2 detailUV : VAR_DETAIL_UV;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
@@ -28,6 +29,7 @@ Varyings ShadowCasterPassVertex(Attributes input)
         output.positionCS.z = max(output.positionCS.z, output.positionCS.w * UNITY_NEAR_CLIP_VALUE);
     #endif
     output.baseUV = TransformBaseUV(input.baseUV);
+    output.detailUV = TransformDetailUV(input.baseUV);
     return output;
 }
 
@@ -35,7 +37,9 @@ void ShadowCasterPassFragment(Varyings input)
 {
     UNITY_SETUP_INSTANCE_ID(input);
     ClipLOD(input.positionCS.xy, unity_LODFade.x);
-    float4 base = GetBase(input.baseUV);
+
+    InputConfig config = GetInputConfig(input.baseUV, input.detailUV);
+    float4 base = GetBase(config);
 
 #if defined(_SHADOWS_CLIP)
     clip(base.a - UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff));
