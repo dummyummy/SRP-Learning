@@ -12,6 +12,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _NORMAL_MAP
   - _PREMULTIPLY_ALPHA
   - _RECEIVE_SHADOWS
   - _SHADOWS_CLIP
@@ -38,6 +39,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _DetailMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _DetailMask:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -54,7 +59,15 @@ Material:
         m_Texture: {fileID: 2800000, guid: 6c83dcb638868e549b7cb17c1ee7ca88, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MaskMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -70,14 +83,23 @@ Material:
     m_Floats:
     - _BumpScale: 1
     - _Clipping: 0
-    - _Cutoff: 0.461
+    - _Cutoff: 0.325
+    - _DetailAlbedo: 1
+    - _DetailMapToggle: 0
     - _DetailNormalMapScale: 1
+    - _DetailNormalScale: 1
+    - _DetailSmoothness: 1
     - _DstBlend: 10
+    - _Fresnel: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _Metallic: 0.746
+    - _MaskMapToggle: 0
+    - _Metallic: 0.547
     - _Mode: 0
+    - _NormalMapToggle: 1
+    - _NormalScale: 1
+    - _Occlusion: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _PremulAlpha: 1
