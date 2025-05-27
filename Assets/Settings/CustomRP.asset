@@ -19,11 +19,11 @@ MonoBehaviour:
     shadowDistance: 200
     distanceFade: 0.001
     directional:
-      atlasSize: 4096
+      atlasSize: 2048
       filterMode: 1
       cascadeCount: 4
       cascadeRatio1: 0.1
       cascadeRatio2: 0.2
       cascadeRatio3: 0.6
       cascadeFadeAndBlend: 0.45
-      cascadeBlendMode: 0
+      cascadeBlendMode: 1

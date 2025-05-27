@@ -13,6 +13,14 @@ Shader "Custom RP/Lit"
 		_Occlusion("Occlusion", Range(0.0, 1.0)) = 1.0
 		_Smoothness("Smoothness", Range(0.0, 1.0)) = 0.5
 		_Fresnel("Fresnel", Range(0.0, 1.0)) = 1.0
+		_DetailMap ("Details", 2D) = "linearGray" {}
+		_DetailAlbedo ("Detail Albedo", Range(0.0, 1.0)) = 1.0
+		_DetailSmoothness ("Detail Smoothness", Range(0.0, 1.0)) = 1.0
+		[Toggle(_NORMAL_MAP)] _NormalMapToggle ("Normal Map", Float) = 1
+		[NoScaleOffset] _NormalMap("Normals", 2D) = "bump" {}
+		_NormalScale("Normal Scale", Range(0.0, 1.0)) = 1.0
+		[NoScaleOffset] _DetailNormalMap("Detail Normals", 2D) = "bump" {}
+		_DetailNormalScale ("Detail Normal Scale", Range(0.0, 1.0)) = 1.0
 		[Toggle(_PREMULTIPLY_ALPHA)] _PremulAlpha ("Premultiply Alpha", Float) = 0
 		[KeywordEnum(On, Clip, Dither, Off)] _Shadows ("Shadows", Float) = 0
 		[Toggle(_RECEIVE_SHADOWS)] _ReceiveShadows ("Receive Shadows", Float) = 1
@@ -48,6 +56,7 @@ Shader "Custom RP/Lit"
 			#pragma multi_compile _ _SHADOW_MASK_ALWAYS _SHADOW_MASK_DISTANCE
 			#pragma multi_compile _ LIGHTMAP_ON
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
+			#pragma shader_feature _NORMAL_MAP
 			#pragma multi_compile_instancing
 			#pragma vertex LitPassVertex
 			#pragma fragment LitPassFragment

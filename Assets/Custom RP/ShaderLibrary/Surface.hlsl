@@ -5,6 +5,7 @@ struct Surface
 {
     float3 position;
     float3 normal;
+    float3 interpolatedNormal; // unpertubated normal
     float3 viewDirection;
     float depth; // in view space
     float3 color;
