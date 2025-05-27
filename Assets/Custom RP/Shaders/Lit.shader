@@ -13,6 +13,7 @@ Shader "Custom RP/Lit"
 		_Occlusion("Occlusion", Range(0.0, 1.0)) = 1.0
 		_Smoothness("Smoothness", Range(0.0, 1.0)) = 0.5
 		_Fresnel("Fresnel", Range(0.0, 1.0)) = 1.0
+		[Toggle(_DETAIL_MAP)] _DetailMapToggle ("Detail Map", Float) = 0
 		_DetailMap ("Details", 2D) = "linearGray" {}
 		_DetailAlbedo ("Detail Albedo", Range(0.0, 1.0)) = 1.0
 		_DetailSmoothness ("Detail Smoothness", Range(0.0, 1.0)) = 1.0
@@ -25,6 +26,7 @@ Shader "Custom RP/Lit"
 		[KeywordEnum(On, Clip, Dither, Off)] _Shadows ("Shadows", Float) = 0
 		[Toggle(_RECEIVE_SHADOWS)] _ReceiveShadows ("Receive Shadows", Float) = 1
 		[NoScaleOffset] _EmissionMap("Emission", 2D) = "white" {}
+		[Toggle(_MASK_MAP)] _MaskMapToggle ("Mask Map", Float) = 0
 		[NoScaleOffset] _MaskMap ("Mask (MODS)", 2D) = "white" {}
 		[HDR] _EmissionColor("Emission Color", Color) = (1.0, 1.0, 1.0, 1.0)
 		[HideInInspector] _MainTex("Texture for Lightmap", 2D) = "white" {}
@@ -57,6 +59,8 @@ Shader "Custom RP/Lit"
 			#pragma multi_compile _ LIGHTMAP_ON
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
 			#pragma shader_feature _NORMAL_MAP
+			#pragma shader_feature _MASK_MAP
+			#pragma shader_feature _DETAIL_MAP
 			#pragma multi_compile_instancing
 			#pragma vertex LitPassVertex
 			#pragma fragment LitPassFragment

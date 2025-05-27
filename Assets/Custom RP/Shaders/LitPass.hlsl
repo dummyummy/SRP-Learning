@@ -24,7 +24,9 @@ struct Varyings
     float3 positionWS : VAR_POSITION;
     float3 normalWS : VAR_NORMAL;
     float2 baseUV : VAR_BASE_UV;
+#if defined(_DETAIL_MAP)
     float2 detailUV : VAR_DETAIL_UV;
+#endif
 #if defined(_NORMAL_MAP)
     float4 tangentWS : VAR_TANGENT;
 #endif
@@ -40,7 +42,9 @@ Varyings LitPassVertex(Attributes input)
     output.positionWS = TransformObjectToWorld(input.positionOS);
     output.positionCS = TransformWorldToHClip(output.positionWS);
     output.baseUV = TransformBaseUV(input.baseUV);
+#if defined(_DETAIL_MAP)
     output.detailUV = TransformDetailUV(input.baseUV);
+#endif
     output.normalWS = TransformObjectToWorldNormal(input.normalOS); // normalized
 #if defined(_NORMAL_MAP)
     output.tangentWS = float4(TransformObjectToWorldDir(input.tangentOS), input.tangentOS.w);
@@ -54,8 +58,15 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     UNITY_SETUP_INSTANCE_ID(input);
     ClipLOD(input.positionCS.xy, unity_LODFade.x);
     
-    InputConfig config = GetInputConfig(input.baseUV, input.detailUV);
+    InputConfig config = GetInputConfig(input.baseUV);
     float4 base = GetBase(config);
+#if defined(_MASK_MAP)
+    config.useMask = true;
+#endif
+#if defined(_DETAIL_MAP)
+    config.detailUV = input.detailUV;
+    config.useDetail = true;
+#endif
 
 #if defined(_CLIPPING)
     clip(base.a - GetCutoff(input.baseUV));
