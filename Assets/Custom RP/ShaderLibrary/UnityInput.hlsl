@@ -6,6 +6,12 @@ CBUFFER_START(UnityPerDraw)
     float4x4 unity_WorldToObject;
     float4 unity_LODFade;
     real4 unity_WorldTransformParams; // w is usually 1.0, or -1.0 for odd-negative scale transforms
+
+    // Light Indices block feature
+    // These are set internally by the engine upon request by RendererConfiguration.
+    half4 unity_LightData;
+    half4 unity_LightIndices[2];
+
     // GI Lightmap
     float4 unity_LightmapST;
     float4 unity_DynamicLightmapST;

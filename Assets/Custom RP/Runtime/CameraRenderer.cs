@@ -21,7 +21,7 @@ public partial class CameraRenderer
 
     public void Render(
         ScriptableRenderContext context, Camera camera,
-        bool useDynamicBatching, bool useGPUInstancing,
+        bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject,
         ShadowSettings shadowSettings) // 每帧都会被调用
     {
         this.context = context;
@@ -36,10 +36,10 @@ public partial class CameraRenderer
 
         commandBuffer.BeginSample(SampleName);
         ExecuteBuffer();
-        lighting.Setup(context, cullingResults, shadowSettings);
+        lighting.Setup(context, cullingResults, shadowSettings, useLightsPerObject); // set up lighting and shadows
         commandBuffer.EndSample(SampleName);
         Setup();
-        DrawVisibleGeometry(useDynamicBatching, useGPUInstancing);
+        DrawVisibleGeometry(useDynamicBatching, useGPUInstancing, useLightsPerObject);
         DrawUnsupportedShaders();
         DrawGizmos();
         lighting.Cleanup();
@@ -59,12 +59,14 @@ public partial class CameraRenderer
         //context.SetupCameraProperties(camera);
     }
 
-    private void DrawVisibleGeometry(bool useDynamicBatching, bool useGPUInstancing)
+    private void DrawVisibleGeometry(bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject)
     {
         var sortSettings = new SortingSettings(camera)
         {
             criteria = SortingCriteria.CommonOpaque // 从前到后绘制
         };
+        PerObjectData lightsPerObjectDataFlags = useLightsPerObject ?
+            PerObjectData.LightData | PerObjectData.LightIndices : PerObjectData.None;
         var drawSettings = new DrawingSettings(unlitShaderTagId, sortSettings)
         {
             enableDynamicBatching = useDynamicBatching,
@@ -72,7 +74,7 @@ public partial class CameraRenderer
             perObjectData = PerObjectData.Lightmaps | PerObjectData.LightProbe |
                             PerObjectData.LightProbeProxyVolume | PerObjectData.ShadowMask | 
                             PerObjectData.OcclusionProbe | PerObjectData.OcclusionProbeProxyVolume |
-                            PerObjectData.ReflectionProbes
+                            PerObjectData.ReflectionProbes | lightsPerObjectDataFlags
         };
         var filterSettings = new FilteringSettings(RenderQueueRange.opaque); // 先绘制不透明物体
         drawSettings.SetShaderPassName(0, unlitShaderTagId);
