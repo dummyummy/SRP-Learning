@@ -30,7 +30,7 @@ float4 _ShadowDistanceFade;
 float4 _ShadowAtlasSize;
 CBUFFER_END
 
-struct DirectionalShadowData // for light
+struct DirectionalShadowData // for directional light
 {
     float strength;
     int tileIndex;
@@ -38,9 +38,9 @@ struct DirectionalShadowData // for light
     int shadowMaskChannel;
 };
 
-struct ShadowMask
+struct ShadowMask // for cascade shadows
 {
-    bool always;
+    bool always; // always use baked shadow mask
     bool distance; // whether distance shadow mask mode is enabled
     float4 shadows;
 };
@@ -51,6 +51,12 @@ struct ShadowData // for fragment shader
     float cascadeBlend;
     float strength;
     ShadowMask shadowMask;
+};
+
+struct OtherShadowData // for 
+{
+    float strength;
+    int shadowMaskChannel;
 };
 
 float FadeShadowStrength (float distance, float scale, float fade)
@@ -199,6 +205,24 @@ float GetDirectionalShadowAttenuation (DirectionalShadowData directional, Shadow
     {
         shadow = GetCascadedShadow(directional, global, surfaceWS);
         shadow = MixBakedAndRealtimeShadows(global, shadow, directional.shadowMaskChannel, directional.strength);
+    }
+    return shadow;
+}
+
+float GetOtherShadowAttenuation (OtherShadowData other, ShadowData global, Surface surfaceWS)
+{
+#if !defined(_RECEIVE_SHADOWS)
+    return 1.0;
+#endif
+
+    float shadow;
+    if (other.strength > 0.0)
+    {
+        shadow = GetBakedShadow(global.shadowMask, other.shadowMaskChannel, other.strength);
+    }
+    else
+    {
+        shadow = 1.0;
     }
     return shadow;
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class CustomRenderPipeline : RenderPipeline
+public partial class CustomRenderPipeline : RenderPipeline
 {
     CameraRenderer cameraRenderer = new CameraRenderer();
     bool useDynamicBatching, useGPUInstancing;
@@ -20,6 +20,7 @@ public class CustomRenderPipeline : RenderPipeline
         this.shadowSettings = shadowSettings;
         GraphicsSettings.useScriptableRenderPipelineBatching = useSRPBatcher;
         GraphicsSettings.lightsUseLinearIntensity = true;
+
     }
 
     protected override void Render(ScriptableRenderContext context, Camera[] cameras)
