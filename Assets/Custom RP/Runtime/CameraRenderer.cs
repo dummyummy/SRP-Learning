@@ -7,6 +7,7 @@ public partial class CameraRenderer
 {
     static ShaderTagId unlitShaderTagId = new ShaderTagId("CustomUnlit");
     static ShaderTagId litShaderTagId = new ShaderTagId("CustomLit");
+    static ShaderTagId computeVisShaderTagId = new ShaderTagId("ComputeVisualize");
 
     ScriptableRenderContext context;
     Camera camera;
@@ -18,6 +19,10 @@ public partial class CameraRenderer
     CullingResults cullingResults;
 
     Lighting lighting = new Lighting();
+
+    ComputeDispatcher cs = new ComputeDispatcher();
+
+    ComputeShader computeShader;
 
     public void Render(
         ScriptableRenderContext context, Camera camera,
@@ -36,13 +41,25 @@ public partial class CameraRenderer
 
         commandBuffer.BeginSample(SampleName);
         ExecuteBuffer();
+        // Do all other setup work here
         lighting.Setup(context, cullingResults, shadowSettings, useLightsPerObject); // set up lighting and shadows
+        computeShader = Resources.Load<ComputeShader>("Compute/Zero");
+        cs.Setup(context, cullingResults, new ComputeDispatcher.ComputeSettings
+        {
+            computeShader = computeShader,
+            kernelName = "CSMain",
+            RTWidth = 1024,
+            RTHeight = 1024,
+            numThreads = new Vector2Int(8, 8)
+        });
+        cs.Render();
         commandBuffer.EndSample(SampleName);
         Setup();
         DrawVisibleGeometry(useDynamicBatching, useGPUInstancing, useLightsPerObject);
         DrawUnsupportedShaders();
         DrawGizmos();
         lighting.Cleanup();
+        cs.Cleanup();
         Submit();
     }
 
@@ -79,6 +96,7 @@ public partial class CameraRenderer
         var filterSettings = new FilteringSettings(RenderQueueRange.opaque); // 先绘制不透明物体
         drawSettings.SetShaderPassName(0, unlitShaderTagId);
         drawSettings.SetShaderPassName(1, litShaderTagId);
+        drawSettings.SetShaderPassName(2, computeVisShaderTagId);
         context.DrawRenderers(cullingResults, ref drawSettings, ref filterSettings);
 
         context.DrawSkybox(camera); // 在Opaque之后绘制天空盒

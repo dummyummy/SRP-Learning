@@ -34,6 +34,9 @@ Shader "Custom RP/Lit"
 	}
 	SubShader
 	{
+		HLSLPROGRAM
+		#pragma enable_d3d11_debug_symbols
+		ENDHLSL
 		HLSLINCLUDE
 		#include "../ShaderLibrary/Common.hlsl"
 		#include "LitInput.hlsl"
