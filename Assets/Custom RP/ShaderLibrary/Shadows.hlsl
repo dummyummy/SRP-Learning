@@ -72,7 +72,7 @@ ShadowData GetShadowData (Surface surfaceWS)
     data.shadowMask.shadows = 1.0;
     data.strength = FadeShadowStrength(surfaceWS.depth, _ShadowDistanceFade.x, _ShadowDistanceFade.y);
     data.cascadeBlend = 1.0;
-    int i;
+    int i = -1;
     // UNITY_UNROLL
     for (i = 0; i < _CascadeCount; i++)
     {
@@ -150,6 +150,12 @@ float GetCascadedShadow(DirectionalShadowData directional, ShadowData global, Su
     return shadow;
 }
 
+float GetOtherShadow (OtherShadowData other, ShadowData global, Surface surfaceWS)
+{
+    // TODO: implement other shadow
+    return 1.0;
+}
+
 float GetBakedShadow (ShadowMask mask, int channel) // without intensity
 {
     float shadow = 1.0;
@@ -216,13 +222,14 @@ float GetOtherShadowAttenuation (OtherShadowData other, ShadowData global, Surfa
 #endif
 
     float shadow;
-    if (other.strength > 0.0)
+    if (other.strength * global.strength <= 0.0)
     {
-        shadow = GetBakedShadow(global.shadowMask, other.shadowMaskChannel, other.strength);
+        shadow = GetBakedShadow(global.shadowMask, other.shadowMaskChannel, abs(other.strength));
     }
     else
     {
-        shadow = 1.0;
+        shadow = GetOtherShadow(other, global, surfaceWS);
+        shadow = MixBakedAndRealtimeShadows(global, shadow, other.shadowMaskChannel, other.strength);
     }
     return shadow;
 }
