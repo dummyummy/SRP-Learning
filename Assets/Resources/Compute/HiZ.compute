@@ -1,0 +1,24 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+Texture2D<float> _HiZSrc;
+RWTexture2D<float> _HiZDst;
+int prevMiplevel;
+
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    int2 baseCoords = int2(id.xy);
+    int2 coords = baseCoords * 2;
+    
+    float d0 = _HiZSrc.Load(int3(coords, prevMiplevel));
+    float d1 = _HiZSrc.Load(int3(coords + int2(1, 0), prevMiplevel));
+    float d2 = _HiZSrc.Load(int3(coords + int2(0, 1), prevMiplevel));
+    float d3 = _HiZSrc.Load(int3(coords + int2(1, 1), prevMiplevel));
+    
+    _HiZDst[baseCoords] = max(max(d0, d1), max(d2, d3));
+}

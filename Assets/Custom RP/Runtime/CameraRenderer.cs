@@ -20,9 +20,13 @@ public partial class CameraRenderer
 
     Lighting lighting = new Lighting();
 
-    ComputeDispatcher cs = new ComputeDispatcher();
+    HiZRenderer cs = new HiZRenderer();
 
     ComputeShader computeShader;
+
+    bool useDepthTexture = true;
+    static int colorAttachmentId = Shader.PropertyToID("_CameraColorAttachment");
+    static int depthAttachmentId = Shader.PropertyToID("_CameraDepthAttachment"); // must be copied to another texture
 
     public void Render(
         ScriptableRenderContext context, Camera camera,
@@ -44,36 +48,70 @@ public partial class CameraRenderer
         // Do all other setup work here
         lighting.Setup(context, cullingResults, shadowSettings, useLightsPerObject); // set up lighting and shadows
         computeShader = Resources.Load<ComputeShader>("Compute/Zero");
-        cs.Setup(context, cullingResults, new ComputeDispatcher.ComputeSettings
+        cs.Setup(context, cullingResults, new HiZRenderer.ComputeSettings
         {
-            computeShader = computeShader,
-            kernelName = "CSMain",
-            RTWidth = 1024,
-            RTHeight = 1024,
-            numThreads = new Vector2Int(8, 8)
+            numThreads = new Vector2Int(8, 8),
+            mipCount = 4
         });
-        cs.Render();
         commandBuffer.EndSample(SampleName);
         Setup();
         DrawVisibleGeometry(useDynamicBatching, useGPUInstancing, useLightsPerObject);
         DrawUnsupportedShaders();
+        cs.Render(camera); // execute compute shader
+        ResetRenderTarget(); // TODO: move to post processing
         DrawGizmos();
-        lighting.Cleanup();
-        cs.Cleanup();
+        Cleanup();
         Submit();
     }
+
 
     private void Setup()
     {
         context.SetupCameraProperties(camera);
         CameraClearFlags flags = camera.clearFlags;
+
+        if (useDepthTexture) // TODO: move to post processing
+        {
+            commandBuffer.GetTemporaryRT(
+                colorAttachmentId, camera.pixelWidth, camera.pixelHeight, 0, FilterMode.Bilinear, RenderTextureFormat.Default
+            );
+            commandBuffer.GetTemporaryRT(
+                depthAttachmentId, camera.pixelWidth, camera.pixelHeight, 32, FilterMode.Point, RenderTextureFormat.Depth
+            );
+            commandBuffer.SetRenderTarget(
+                colorAttachmentId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store,
+                depthAttachmentId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store
+            );
+        }
+
         commandBuffer.ClearRenderTarget(
             flags <= CameraClearFlags.Depth,
             flags <= CameraClearFlags.Color,
             flags <= CameraClearFlags.Color ? camera.backgroundColor.linear : Color.clear);
         commandBuffer.BeginSample(SampleName);
         ExecuteBuffer();
-        //context.SetupCameraProperties(camera);
+    }
+
+    private void Cleanup()
+    {
+        lighting.Cleanup();
+        cs.Cleanup();
+        if (useDepthTexture) // TODO: move to pose processing
+        {
+            commandBuffer.ReleaseTemporaryRT(colorAttachmentId);
+            commandBuffer.ReleaseTemporaryRT(depthAttachmentId);
+            ExecuteBuffer();
+        }
+    }
+
+    private void ResetRenderTarget() // TODO: move to pose processing
+    {
+        if (useDepthTexture)
+        {
+            commandBuffer.Blit(colorAttachmentId, BuiltinRenderTextureType.CameraTarget);
+            commandBuffer.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
+            ExecuteBuffer();
+        }
     }
 
     private void DrawVisibleGeometry(bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject)

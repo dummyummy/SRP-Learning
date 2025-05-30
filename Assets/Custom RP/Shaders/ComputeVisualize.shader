@@ -2,7 +2,7 @@ Shader "Custom RP/ComputeVisualize"
 {
     Properties
     {
-
+        [Toggle(_VIS_DEPTH)] _TOGGLE_VIS_DEPTH("Visualize Depth", Float) = 0
     }
     SubShader
     {

@@ -10,8 +10,10 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 
-TEXTURE2D(_ComputeResult);
+TEXTURE2D(_ComputeResult); // from compute shader
 SAMPLER(sampler_ComputeResult);
+TEXTURE2D(_CameraDepthTexture);
+SAMPLER(sampler_CameraDepthTexture);
 
 // UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
 //     UNITY_DEFINE_INSTANCED_PROP(float4, _ComputeResult_ST)
@@ -49,7 +51,14 @@ Varyings ComputeVisualizeVertex(Attributes input)
 float4 ComputeVisualizeFragment(Varyings input) : SV_TARGET
 {
     UNITY_SETUP_INSTANCE_ID(input);
-    float3 color = SAMPLE_TEXTURE2D(_ComputeResult, sampler_ComputeResult, input.baseUV).xyz;
+    float3 color = float3(0.0, 0.0, 0.0);
+#if defined(_VIS_DEPTH)
+    float rawDepth = SAMPLE_DEPTH_TEXTURE_LOD(_CameraDepthTexture, sampler_CameraDepthTexture, input.baseUV, 0).r;
+    float linearDepth = Linear01Depth(rawDepth, _ZBufferParams);
+    color = float3(linearDepth, linearDepth, linearDepth); // visualize depth as grayscale
+#else
+    color = SAMPLE_TEXTURE2D(_ComputeResult, sampler_ComputeResult, input.baseUV).xyz;
+#endif
     return float4(color, 1.0);
 }
 
