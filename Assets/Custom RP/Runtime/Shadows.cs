@@ -195,7 +195,7 @@ public class Shadows
 
         buffer.BeginSample(bufferName);
         SetKeywords(shadowMaskKeywords, useShadowMask ? (QualitySettings.shadowmaskMode == ShadowmaskMode.Shadowmask ? 0 : 1) : -1);
-        buffer.SetGlobalInt(cascadeCountId, shadowSettings.directional.cascadeCount);
+        buffer.SetGlobalInt(cascadeCountId, shadowedDirectionalLightCount > 0 ? shadowSettings.directional.cascadeCount : 0);
         float f = 1f - shadowSettings.directional.cascadeFadeAndBlend;
         buffer.SetGlobalVector(shadowDistanceFadeId, new Vector4(
             1f / shadowSettings.shadowDistance,

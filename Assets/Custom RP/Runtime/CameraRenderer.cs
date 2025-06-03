@@ -12,7 +12,7 @@ public partial class CameraRenderer
     ScriptableRenderContext context;
     Camera camera;
     const string bufferName = "Render Camera";
-    CommandBuffer commandBuffer = new CommandBuffer
+    CommandBuffer buffer = new CommandBuffer
     {
         name = bufferName
     };
@@ -20,18 +20,19 @@ public partial class CameraRenderer
 
     Lighting lighting = new Lighting();
 
-    HiZRenderer cs = new HiZRenderer();
+    //HiZRenderer cs = new HiZRenderer();
 
-    ComputeShader computeShader;
+    PostFXStack postFXStack = new PostFXStack();
 
-    bool useDepthTexture = true;
-    static int colorAttachmentId = Shader.PropertyToID("_CameraColorAttachment");
-    static int depthAttachmentId = Shader.PropertyToID("_CameraDepthAttachment"); // must be copied to another texture
+    //bool useDepthTexture = false;
+    //static int colorAttachmentId = Shader.PropertyToID("_CameraColorAttachment");
+    //static int depthAttachmentId = Shader.PropertyToID("_CameraDepthAttachment"); // must be copied to another texture
+    static int frameBufferId = Shader.PropertyToID("_CameraFrameBuffer");
 
     public void Render(
         ScriptableRenderContext context, Camera camera,
         bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject,
-        ShadowSettings shadowSettings) // 每帧都会被调用
+        ShadowSettings shadowSettings, PostFXSettings postFXSettings) // 每帧都会被调用
     {
         this.context = context;
         this.camera = camera;
@@ -43,23 +44,28 @@ public partial class CameraRenderer
             return;
         }
 
-        commandBuffer.BeginSample(SampleName);
+        buffer.BeginSample(SampleName);
         ExecuteBuffer();
         // Do all other setup work here
         lighting.Setup(context, cullingResults, shadowSettings, useLightsPerObject); // set up lighting and shadows
-        computeShader = Resources.Load<ComputeShader>("Compute/Zero");
-        cs.Setup(context, cullingResults, new HiZRenderer.ComputeSettings
-        {
-            numThreads = new Vector2Int(8, 8),
-            mipCount = 4
-        });
-        commandBuffer.EndSample(SampleName);
+        postFXStack.Setup(context, camera, postFXSettings);
+        //cs.Setup(context, cullingResults, new HiZRenderer.ComputeSettings
+        //{
+        //    numThreads = new Vector2Int(8, 8),
+        //    mipCount = 4
+        //});
+        buffer.EndSample(SampleName);
         Setup();
         DrawVisibleGeometry(useDynamicBatching, useGPUInstancing, useLightsPerObject);
         DrawUnsupportedShaders();
-        cs.Render(camera); // execute compute shader
-        ResetRenderTarget(); // TODO: move to post processing
-        DrawGizmos();
+        //cs.Render(camera); // execute compute shader
+        //ResetRenderTarget(); // TODO: move to post processing
+        DrawGizmosBeforeFX();
+        if (postFXStack.IsActive)
+        {
+            postFXStack.Render(frameBufferId);
+        }
+        DrawGizmosAfterFX();
         Cleanup();
         Submit();
     }
@@ -70,48 +76,65 @@ public partial class CameraRenderer
         context.SetupCameraProperties(camera);
         CameraClearFlags flags = camera.clearFlags;
 
-        if (useDepthTexture) // TODO: move to post processing
+        //if (useDepthTexture) // TODO: move to post processing
+        //{
+        //    commandBuffer.GetTemporaryRT(
+        //        colorAttachmentId, camera.pixelWidth, camera.pixelHeight, 0, FilterMode.Bilinear, RenderTextureFormat.Default
+        //    );
+        //    commandBuffer.GetTemporaryRT(
+        //        depthAttachmentId, camera.pixelWidth, camera.pixelHeight, 32, FilterMode.Point, RenderTextureFormat.Depth
+        //    );
+        //    commandBuffer.SetRenderTarget(
+        //        colorAttachmentId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store,
+        //        depthAttachmentId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store
+        //    );
+        //}
+
+        if (postFXStack.IsActive)
         {
-            commandBuffer.GetTemporaryRT(
-                colorAttachmentId, camera.pixelWidth, camera.pixelHeight, 0, FilterMode.Bilinear, RenderTextureFormat.Default
+            if (flags > CameraClearFlags.Color)
+            {
+                flags = CameraClearFlags.Color;
+            }
+            buffer.GetTemporaryRT(
+                frameBufferId, camera.pixelWidth, camera.pixelHeight,
+                32, FilterMode.Bilinear, RenderTextureFormat.Default
             );
-            commandBuffer.GetTemporaryRT(
-                depthAttachmentId, camera.pixelWidth, camera.pixelHeight, 32, FilterMode.Point, RenderTextureFormat.Depth
-            );
-            commandBuffer.SetRenderTarget(
-                colorAttachmentId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store,
-                depthAttachmentId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store
-            );
+            buffer.SetRenderTarget(frameBufferId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);
         }
 
-        commandBuffer.ClearRenderTarget(
+        buffer.ClearRenderTarget(
             flags <= CameraClearFlags.Depth,
             flags <= CameraClearFlags.Color,
             flags <= CameraClearFlags.Color ? camera.backgroundColor.linear : Color.clear);
-        commandBuffer.BeginSample(SampleName);
+        buffer.BeginSample(SampleName);
         ExecuteBuffer();
     }
 
     private void Cleanup()
     {
         lighting.Cleanup();
-        cs.Cleanup();
-        if (useDepthTexture) // TODO: move to pose processing
+        //cs.Cleanup();
+        //if (usedepthtexture) // todo: move to pose processing
+        //{
+        //    commandbuffer.releasetemporaryrt(colorattachmentid);
+        //    commandbuffer.releasetemporaryrt(depthattachmentid);
+        //    executebuffer();
+        //}
+        if (postFXStack.IsActive)
         {
-            commandBuffer.ReleaseTemporaryRT(colorAttachmentId);
-            commandBuffer.ReleaseTemporaryRT(depthAttachmentId);
-            ExecuteBuffer();
+            buffer.ReleaseTemporaryRT(frameBufferId);
         }
     }
 
     private void ResetRenderTarget() // TODO: move to pose processing
     {
-        if (useDepthTexture)
-        {
-            commandBuffer.Blit(colorAttachmentId, BuiltinRenderTextureType.CameraTarget);
-            commandBuffer.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
-            ExecuteBuffer();
-        }
+        //if (useDepthTexture)
+        //{
+        //    commandBuffer.Blit(colorAttachmentId, BuiltinRenderTextureType.CameraTarget);
+        //    commandBuffer.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
+        //    ExecuteBuffer();
+        //}
     }
 
     private void DrawVisibleGeometry(bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject)
@@ -147,15 +170,15 @@ public partial class CameraRenderer
 
     private void Submit()
     {
-        commandBuffer.EndSample(SampleName);
+        buffer.EndSample(SampleName);
         ExecuteBuffer();
         context.Submit();
     }
 
     private void ExecuteBuffer()
     {
-        context.ExecuteCommandBuffer(commandBuffer);
-        commandBuffer.Clear();
+        context.ExecuteCommandBuffer(buffer);
+        buffer.Clear();
     }
 
     private bool Cull(float maxShadowDistance)

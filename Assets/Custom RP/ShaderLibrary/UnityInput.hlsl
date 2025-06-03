@@ -7,6 +7,12 @@ CBUFFER_START(UnityPerDraw)
     float4 unity_LODFade;
     real4 unity_WorldTransformParams; // w is usually 1.0, or -1.0 for odd-negative scale transforms
 
+    // x = 1 or -1 (-1 if projection is flipped)
+    // y = near plane
+    // z = far plane
+    // w = 1/far plane
+    float4 _ProjectionParams;
+
     // Light Indices block feature
     // These are set internally by the engine upon request by RendererConfiguration.
     half4 unity_LightData;

@@ -114,7 +114,7 @@ ShadowData GetShadowData (Surface surfaceWS)
         }
     }
 
-    if (i == _CascadeCount)
+    if (i == _CascadeCount && _CascadeCount > 0) // beyond CSM
     {
         data.strength = 0.0;
     }
