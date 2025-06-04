@@ -12,4 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd526becb27640b4497d3b99b2a914fc, type: 3}
   m_Name: CustomRPPostFX
   m_EditorClassIdentifier: 
+  bloom:
+    maxIterations: 1
+    downscaleLimit: 1
+    bicubicUpsampling: 1
   shader: {fileID: 4800000, guid: d1cb877561eb2ed408b1812855fb7713, type: 3}

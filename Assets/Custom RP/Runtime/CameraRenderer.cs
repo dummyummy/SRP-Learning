@@ -1,4 +1,4 @@
-using System.Collections;
+锘縰sing System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -32,7 +32,7 @@ public partial class CameraRenderer
     public void Render(
         ScriptableRenderContext context, Camera camera,
         bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject,
-        ShadowSettings shadowSettings, PostFXSettings postFXSettings) // 每帧都会被调用
+        ShadowSettings shadowSettings, PostFXSettings postFXSettings)
     {
         this.context = context;
         this.camera = camera;
@@ -141,7 +141,7 @@ public partial class CameraRenderer
     {
         var sortSettings = new SortingSettings(camera)
         {
-            criteria = SortingCriteria.CommonOpaque // 从前到后绘制
+            criteria = SortingCriteria.CommonOpaque
         };
         PerObjectData lightsPerObjectDataFlags = useLightsPerObject ?
             PerObjectData.LightData | PerObjectData.LightIndices : PerObjectData.None;
@@ -154,17 +154,17 @@ public partial class CameraRenderer
                             PerObjectData.OcclusionProbe | PerObjectData.OcclusionProbeProxyVolume |
                             PerObjectData.ReflectionProbes | lightsPerObjectDataFlags
         };
-        var filterSettings = new FilteringSettings(RenderQueueRange.opaque); // 先绘制不透明物体
+        var filterSettings = new FilteringSettings(RenderQueueRange.opaque);
         drawSettings.SetShaderPassName(0, unlitShaderTagId);
         drawSettings.SetShaderPassName(1, litShaderTagId);
         drawSettings.SetShaderPassName(2, computeVisShaderTagId);
         context.DrawRenderers(cullingResults, ref drawSettings, ref filterSettings);
 
-        context.DrawSkybox(camera); // 在Opaque之后绘制天空盒
+        context.DrawSkybox(camera); // draw after opaque geometry to avoid overdraw
 
         sortSettings.criteria = SortingCriteria.CommonTransparent;
         drawSettings.sortingSettings = sortSettings;
-        filterSettings.renderQueueRange = RenderQueueRange.transparent; // 然后绘制透明物体
+        filterSettings.renderQueueRange = RenderQueueRange.transparent;
         context.DrawRenderers(cullingResults, ref drawSettings, ref filterSettings);
     }
 

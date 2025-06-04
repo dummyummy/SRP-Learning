@@ -5,6 +5,22 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rendering/Custom Post FX Settings")]
 public class PostFXSettings : ScriptableObject
 {
+    [System.Serializable]
+    public struct BloomSettings
+    {
+        [Range(0, 16)]
+        public int maxIterations;
+
+        [Min(1f)] public int downscaleLimit;
+        
+        public bool bicubicUpsampling;
+    }
+    
+    [SerializeField]
+    BloomSettings bloom = default;
+    
+    public BloomSettings Bloom => bloom;
+    
     [SerializeField]
     Shader shader = default;
 
