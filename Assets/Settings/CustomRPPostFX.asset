@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: CustomRPPostFX
   m_EditorClassIdentifier: 
   bloom:
-    maxIterations: 1
+    maxIterations: 3
     downscaleLimit: 1
     bicubicUpsampling: 1
+    threshold: 0.79
+    thresholdKnee: 0
+    intensity: 0.7
   shader: {fileID: 4800000, guid: d1cb877561eb2ed408b1812855fb7713, type: 3}

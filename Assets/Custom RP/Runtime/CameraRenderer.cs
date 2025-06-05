@@ -29,8 +29,10 @@ public partial class CameraRenderer
     //static int depthAttachmentId = Shader.PropertyToID("_CameraDepthAttachment"); // must be copied to another texture
     static int frameBufferId = Shader.PropertyToID("_CameraFrameBuffer");
 
+    bool useHDR;
+
     public void Render(
-        ScriptableRenderContext context, Camera camera,
+        ScriptableRenderContext context, Camera camera, bool allowHDR,
         bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject,
         ShadowSettings shadowSettings, PostFXSettings postFXSettings)
     {
@@ -43,6 +45,8 @@ public partial class CameraRenderer
         {
             return;
         }
+        
+        useHDR = allowHDR && camera.allowHDR;
 
         buffer.BeginSample(SampleName);
         ExecuteBuffer();
@@ -98,7 +102,7 @@ public partial class CameraRenderer
             }
             buffer.GetTemporaryRT(
                 frameBufferId, camera.pixelWidth, camera.pixelHeight,
-                32, FilterMode.Bilinear, RenderTextureFormat.Default
+                32, FilterMode.Bilinear, useHDR ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default
             );
             buffer.SetRenderTarget(frameBufferId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);
         }

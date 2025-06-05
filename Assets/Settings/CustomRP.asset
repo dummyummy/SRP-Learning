@@ -16,6 +16,7 @@ MonoBehaviour:
   useGPUInstancing: 1
   useLightsPerObject: 0
   useSRPBatcher: 1
+  allowHDR: 1
   shadowSettings:
     shadowDistance: 200
     distanceFade: 0.109
